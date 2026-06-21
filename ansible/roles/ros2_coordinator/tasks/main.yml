@@ -1,0 +1,102 @@
+---
+- name: Install prerequisites
+  ansible.builtin.apt:
+    name: [locales, curl, gnupg2, lsb-release, software-properties-common]
+    state: present
+    update_cache: true
+
+- name: Generate en_US.UTF-8 locale
+  ansible.builtin.locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Add ROS2 GPG key
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+    dest: /usr/share/keyrings/ros-archive-keyring.gpg
+    mode: "0644"
+
+- name: Add ROS2 apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main"
+    state: present
+    filename: ros2
+
+- name: Install ROS2 Humble base + build tools
+  ansible.builtin.apt:
+    name:
+      - ros-{{ ros2_distro }}-ros-base
+      - ros-{{ ros2_distro }}-rmw-cyclonedds-cpp
+      - ros-{{ ros2_distro }}-geometry-msgs
+      - ros-{{ ros2_distro }}-std-msgs
+      - ros-{{ ros2_distro }}-action-msgs
+      - ros-{{ ros2_distro }}-rosidl-default-generators
+      - ros-{{ ros2_distro }}-rosidl-default-runtime
+      - python3-colcon-common-extensions
+      - python3-rosdep
+      - git
+      - build-essential
+    state: present
+    update_cache: true
+
+- name: Clone / update fleet repository
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ ros2_ws }}"
+    version: "{{ repo_branch }}"
+    force: true
+
+- name: Initialize rosdep
+  ansible.builtin.command: rosdep init
+  args:
+    creates: /etc/ros/rosdep/sources.list.d/20-default.list
+
+- name: Update rosdep
+  ansible.builtin.command: rosdep update
+  changed_when: true
+
+- name: Install workspace dependencies via rosdep
+  ansible.builtin.shell: |
+    source /opt/ros/{{ ros2_distro }}/setup.bash
+    rosdep install --from-paths {{ ros2_ws }}/ros2_ws/src \
+      --ignore-src -r -y \
+      --skip-keys "amr_interfaces amr_robot_core amr_monitoring amr_bringup amr_fleet_coordinator amr_safety"
+  args:
+    executable: /bin/bash
+  changed_when: true
+
+- name: Build all packages
+  ansible.builtin.shell: |
+    source /opt/ros/{{ ros2_distro }}/setup.bash
+    cd {{ ros2_ws }}/ros2_ws
+    colcon build \
+      --parallel-workers {{ colcon_parallel_workers }} \
+      --cmake-args -DCMAKE_BUILD_TYPE=Release \
+      --event-handlers console_cohesion+
+  args:
+    executable: /bin/bash
+  register: colcon_result
+  changed_when: true
+  notify: restart ros2_coordinator
+
+- name: Show build errors if any
+  ansible.builtin.debug:
+    var: colcon_result.stderr_lines
+  when: colcon_result.rc != 0
+  failed_when: colcon_result.rc != 0
+
+- name: Deploy ros2_coordinator systemd service
+  ansible.builtin.template:
+    src: ros2_coordinator.service.j2
+    dest: /etc/systemd/system/ros2_coordinator.service
+    mode: "0644"
+  notify:
+    - reload systemd
+    - restart ros2_coordinator
+
+- name: Enable and start ros2_coordinator
+  ansible.builtin.systemd:
+    name: ros2_coordinator
+    enabled: true
+    state: started
+    daemon_reload: true

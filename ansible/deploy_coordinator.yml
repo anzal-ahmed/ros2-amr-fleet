@@ -1,0 +1,8 @@
+---
+# Deploy / update fleet coordinator on monitoring node only.
+# Usage: ansible-playbook deploy_coordinator.yml
+- name: Deploy ROS2 fleet coordinator
+  hosts: monitoring
+  become: true
+  roles:
+    - ros2_coordinator

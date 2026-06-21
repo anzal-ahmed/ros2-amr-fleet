@@ -1,0 +1,6 @@
+---
+ros2_distro: humble
+ros2_ws: /opt/ros2_ws
+repo_url: https://github.com/anzal-ahmed/ros2-amr-fleet.git
+repo_branch: main
+colcon_parallel_workers: 1

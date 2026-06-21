@@ -1,0 +1,24 @@
+[Unit]
+Description=ROS2 AMR Fleet Coordinator (coordinator + watchdog + safety)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+Environment="RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
+Environment="CYCLONEDDS_URI=file://{{ ros2_ws }}/ros2_ws/install/amr_bringup/share/amr_bringup/config/cyclonedds.xml"
+Environment="ROS_DOMAIN_ID=0"
+ExecStart=/bin/bash -c '\
+  source /opt/ros/{{ ros2_distro }}/setup.bash && \
+  source {{ ros2_ws }}/ros2_ws/install/setup.bash && \
+  ros2 launch amr_bringup fleet.launch.py'
+Restart=on-failure
+RestartSec=10s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ros2_coordinator
+
+[Install]
+WantedBy=multi-user.target
