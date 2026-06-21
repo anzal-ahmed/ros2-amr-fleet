@@ -8,10 +8,11 @@
   <license>Apache-2.0</license>
 
   <depend>amr_robot_core</depend>
-  <depend>amr_fleet_coordinator</depend>
-  <depend>amr_safety</depend>
   <depend>amr_monitoring</depend>
   <depend>launch_ros</depend>
+  <!-- fleet_coordinator and safety are monitoring-node only; exec_depend avoids colcon requiring them on robot builds -->
+  <exec_depend>amr_fleet_coordinator</exec_depend>
+  <exec_depend>amr_safety</exec_depend>
 
   <buildtool_depend>ament_python</buildtool_depend>
   <test_depend>ament_lint_auto</test_depend>
