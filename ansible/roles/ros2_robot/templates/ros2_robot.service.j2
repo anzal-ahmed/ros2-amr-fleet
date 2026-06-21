@@ -1,0 +1,24 @@
+[Unit]
+Description=ROS2 AMR Robot Node ({{ robot_id }})
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+Environment="RMW_IMPLEMENTATION=rmw_cyclonedds_cpp"
+Environment="CYCLONEDDS_URI=file://{{ ros2_ws }}/ros2_ws/src/amr_bringup/config/cyclonedds.xml"
+Environment="ROS_DOMAIN_ID=0"
+ExecStart=/bin/bash -c '\
+  source /opt/ros/{{ ros2_distro }}/setup.bash && \
+  source {{ ros2_ws }}/ros2_ws/install/setup.bash && \
+  ros2 launch amr_bringup robot.launch.py robot_id:={{ robot_id }}'
+Restart=on-failure
+RestartSec=10s
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ros2_robot_{{ robot_id }}
+
+[Install]
+WantedBy=multi-user.target

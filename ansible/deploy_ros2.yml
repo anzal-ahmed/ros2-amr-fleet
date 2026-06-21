@@ -1,0 +1,8 @@
+---
+# Standalone playbook — deploy/update ROS2 code on robot nodes only.
+# Usage: ansible-playbook deploy_ros2.yml
+- name: Deploy ROS2 robot nodes
+  hosts: robots
+  become: true
+  roles:
+    - ros2_robot

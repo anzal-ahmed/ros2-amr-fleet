@@ -1,0 +1,15 @@
+---
+ros2_distro: humble
+ros2_ws: /opt/ros2_ws
+repo_url: https://github.com/anzal-ahmed/ros2-amr-fleet.git
+repo_branch: main
+
+# Packages to build on robot nodes (skip coordinator/safety — those run on monitoring)
+ros2_packages_to_build:
+  - amr_interfaces
+  - amr_robot_core
+  - amr_monitoring
+  - amr_bringup
+
+# Use 1 parallel worker — t3.small has 2GB RAM, C++ build can OOM with >1
+colcon_parallel_workers: 1

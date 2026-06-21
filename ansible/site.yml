@@ -5,6 +5,12 @@
   roles:
     - node_exporter
 
+- name: Deploy ROS2 robot nodes
+  hosts: robots
+  become: true
+  roles:
+    - ros2_robot
+
 - name: Deploy Prometheus + Grafana on monitoring node
   hosts: monitoring
   become: true

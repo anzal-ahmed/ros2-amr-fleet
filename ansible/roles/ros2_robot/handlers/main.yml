@@ -1,0 +1,9 @@
+---
+- name: reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: restart ros2_robot
+  ansible.builtin.systemd:
+    name: ros2_robot
+    state: restarted
