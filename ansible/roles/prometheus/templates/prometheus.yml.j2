@@ -1,0 +1,44 @@
+global:
+  scrape_interval:     {{ prometheus_scrape_interval }}
+  evaluation_interval: {{ prometheus_evaluation_interval }}
+  external_labels:
+    cluster: ros2-amr-fleet
+    environment: dev
+
+rule_files: []
+
+scrape_configs:
+  # System metrics from robot nodes via node_exporter
+  - job_name: robot_node_exporter
+    static_configs:
+      - targets:
+{% for host in groups['robots'] %}
+          - '{{ hostvars[host]["private_ip"] }}:{{ robot_node_exporter_port }}'
+{% endfor %}
+        labels:
+          fleet: ros2-amr
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^:]+):.*'
+        target_label: instance
+        replacement: '${1}'
+
+  # ROS2 fleet metrics from amr_monitoring node on each robot
+  - job_name: ros2_fleet_metrics
+    static_configs:
+      - targets:
+{% for host in groups['robots'] %}
+          - '{{ hostvars[host]["private_ip"] }}:{{ robot_ros2_metrics_port }}'
+{% endfor %}
+        labels:
+          fleet: ros2-amr
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '([^:]+):.*'
+        target_label: instance
+        replacement: '${1}'
+
+  # Self-scrape
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:{{ prometheus_port }}']

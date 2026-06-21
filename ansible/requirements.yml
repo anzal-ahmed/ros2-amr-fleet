@@ -1,0 +1,6 @@
+---
+# No external galaxy roles needed — all roles are local.
+# Ansible version requirement: >= 2.14
+collections:
+  - name: ansible.builtin
+    version: ">=2.14"

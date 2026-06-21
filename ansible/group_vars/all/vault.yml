@@ -1,0 +1,8 @@
+# Encrypt this file with: ansible-vault encrypt ansible/group_vars/all/vault.yml
+# Then run playbook with:  ansible-playbook site.yml --ask-vault-pass
+#
+# To set the password now:
+#   ansible-vault encrypt_string 'YourStrongPassword123!' --name 'grafana_admin_password'
+# and paste the result here replacing the placeholder below.
+
+grafana_admin_password: "ROS2Fleet2024!"

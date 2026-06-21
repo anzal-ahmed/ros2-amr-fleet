@@ -1,0 +1,277 @@
+{
+  "title": "ROS2 AMR Fleet",
+  "uid": "ros2-amr-fleet",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "15s",
+  "time": { "from": "now-1h", "to": "now" },
+  "tags": ["ros2", "amr", "fleet"],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Fleet Overview",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Active Missions",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "amr_fleet_active_missions",
+          "legendFormat": "Active"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 2 },
+              { "color": "red", "value": 3 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Robots Available",
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "amr_fleet_robots_available",
+          "legendFormat": "Available"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 1 },
+              { "color": "green", "value": 2 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "E-Stop",
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "amr_fleet_estop_active",
+          "legendFormat": "E-Stop"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "mappings": [
+          { "type": "value", "options": { "0": { "text": "CLEAR", "color": "green" }, "1": { "text": "ACTIVE", "color": "red" } } }
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": "row",
+      "title": "ROS2 Robot Metrics",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "collapsed": false
+    },
+    {
+      "id": 11,
+      "type": "timeseries",
+      "title": "Battery Level per Robot (%)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 6 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "amr_robot_battery_percent",
+          "legendFormat": "{{ robot_id }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 20 },
+              { "color": "green", "value": 50 }
+            ]
+          }
+        }
+      },
+      "options": {
+        "tooltip": { "mode": "multi" }
+      }
+    },
+    {
+      "id": 12,
+      "type": "timeseries",
+      "title": "Robot State",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 6 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "amr_robot_state",
+          "legendFormat": "{{ robot_id }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": {
+              "0": { "text": "IDLE" },
+              "1": { "text": "NAVIGATING" },
+              "2": { "text": "DOCKING" },
+              "3": { "text": "CHARGING" },
+              "4": { "text": "SAFE_STOP" },
+              "5": { "text": "ERROR" }
+            }}
+          ],
+          "min": 0,
+          "max": 5
+        }
+      }
+    },
+    {
+      "id": 20,
+      "type": "row",
+      "title": "System Metrics (node_exporter)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 13 },
+      "collapsed": false
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "CPU Usage per Robot (%)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 14 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode='idle',job='robot_node_exporter'}[2m])) * 100)",
+          "legendFormat": "{{ instance }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 22,
+      "type": "timeseries",
+      "title": "Memory Used per Robot (%)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 14 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(1 - node_memory_MemAvailable_bytes{job='robot_node_exporter'} / node_memory_MemTotal_bytes{job='robot_node_exporter'}) * 100",
+          "legendFormat": "{{ instance }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 75 },
+              { "color": "red", "value": 90 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 23,
+      "type": "timeseries",
+      "title": "Disk Used per Robot (%)",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 21 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "(1 - node_filesystem_avail_bytes{job='robot_node_exporter',mountpoint='/'} / node_filesystem_size_bytes{job='robot_node_exporter',mountpoint='/'}) * 100",
+          "legendFormat": "{{ instance }}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 70 },
+              { "color": "red", "value": 85 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": 24,
+      "type": "timeseries",
+      "title": "Network RX/TX per Robot",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 21 },
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(node_network_receive_bytes_total{job='robot_node_exporter',device='eth0'}[2m])",
+          "legendFormat": "{{ instance }} RX"
+        },
+        {
+          "expr": "rate(node_network_transmit_bytes_total{job='robot_node_exporter',device='eth0'}[2m])",
+          "legendFormat": "{{ instance }} TX"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps"
+        }
+      }
+    }
+  ]
+}

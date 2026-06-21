@@ -1,0 +1,15 @@
+---
+prometheus_version: "2.51.2"
+prometheus_port: 9090
+prometheus_user: prometheus
+prometheus_install_dir: /usr/local/bin
+prometheus_config_dir: /etc/prometheus
+prometheus_data_dir: /var/lib/prometheus
+prometheus_retention_time: "15d"
+prometheus_scrape_interval: "15s"
+prometheus_evaluation_interval: "15s"
+
+# Port for node_exporter on robot nodes
+robot_node_exporter_port: 9100
+# Port for ROS2 metrics exporter on robot nodes
+robot_ros2_metrics_port: 9101

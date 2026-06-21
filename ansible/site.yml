@@ -1,0 +1,13 @@
+---
+- name: Install node_exporter on all robot nodes
+  hosts: robots
+  become: true
+  roles:
+    - node_exporter
+
+- name: Deploy Prometheus + Grafana on monitoring node
+  hosts: monitoring
+  become: true
+  roles:
+    - prometheus
+    - grafana

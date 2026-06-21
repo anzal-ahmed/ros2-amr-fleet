@@ -1,0 +1,38 @@
+[server]
+http_port = {{ grafana_port }}
+domain = {{ ansible_host }}
+root_url = http://{{ ansible_host }}:{{ grafana_port }}/
+
+[database]
+type = sqlite3
+path = {{ grafana_data_dir }}/grafana.db
+
+[security]
+admin_user = {{ grafana_admin_user }}
+admin_password = {{ grafana_admin_password }}
+secret_key = {{ ansible_machine_id | default('ros2-fleet-secret') }}
+
+[users]
+allow_sign_up = false
+auto_assign_org = true
+auto_assign_org_role = Viewer
+
+[auth.anonymous]
+enabled = false
+
+[log]
+mode = file
+level = warn
+
+[log.file]
+log_rotate = true
+max_lines = 1000000
+max_size_shift = 28
+daily_rotate = true
+max_days = 7
+
+[paths]
+data = {{ grafana_data_dir }}
+logs = {{ grafana_log_dir }}
+plugins = {{ grafana_plugins_dir }}
+provisioning = {{ grafana_provisioning_dir }}
