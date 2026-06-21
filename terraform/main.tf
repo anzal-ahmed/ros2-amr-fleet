@@ -124,11 +124,11 @@ resource "aws_security_group" "robot" {
     cidr_blocks = [var.vpc_cidr]
   }
 
-  # Prometheus node_exporter scrape from monitoring node
+  # Prometheus scrape ports from monitoring node (9100=node_exporter, 9101=ROS2 metrics)
   ingress {
-    description     = "node-exporter"
+    description     = "prometheus-scrape"
     from_port       = 9100
-    to_port         = 9100
+    to_port         = 9101
     protocol        = "tcp"
     security_groups = [aws_security_group.monitoring.id]
   }
@@ -169,6 +169,14 @@ resource "aws_security_group" "monitoring" {
     to_port     = 9090
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "CycloneDDS from robot nodes"
+    from_port   = 7400
+    to_port     = 7500
+    protocol    = "udp"
+    cidr_blocks = [var.vpc_cidr]
   }
 
   egress {
