@@ -4,10 +4,14 @@ ros2_ws: /opt/ros2_ws
 repo_url: https://github.com/anzal-ahmed/ros2-amr-fleet.git
 repo_branch: main
 
-# Packages to build on robot nodes (skip coordinator/safety — those run on monitoring)
+# Build all packages — ament_python checks exec_depend packages at build time too.
+# Python packages are trivial to build; only amr_interfaces is C++.
+# coordinator/safety won't be launched on robot nodes but must be present.
 ros2_packages_to_build:
   - amr_interfaces
   - amr_robot_core
+  - amr_fleet_coordinator
+  - amr_safety
   - amr_monitoring
   - amr_bringup
 
