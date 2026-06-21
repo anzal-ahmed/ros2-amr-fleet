@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  CycloneDDS unicast peer discovery config for AWS VPC deployment.
+  Multicast is disabled — AWS VPC does not route multicast traffic.
+  Each node must list all peers explicitly by private IP.
+
+  Robot private IPs (eu-central-1, VPC 10.0.0.0/16):
+    robot-0:   10.0.1.68
+    robot-1:   10.0.2.111
+    robot-2:   10.0.1.94
+    monitoring: 10.0.1.175
+
+  Usage: export CYCLONEDDS_URI=file:///ros2_ws/src/amr_bringup/config/cyclonedds.xml
+-->
+<CycloneDDS>
+  <Domain>
+    <General>
+      <NetworkInterfaceAddress>eth0</NetworkInterfaceAddress>
+      <AllowMulticast>false</AllowMulticast>
+      <MaxMessageSize>65500B</MaxMessageSize>
+    </General>
+    <Discovery>
+      <ParticipantIndex>auto</ParticipantIndex>
+      <Peers>
+        <Peer address="10.0.1.68"/>
+        <Peer address="10.0.2.111"/>
+        <Peer address="10.0.1.94"/>
+        <Peer address="10.0.1.175"/>
+      </Peers>
+    </Discovery>
+    <Internal>
+      <Watermarks>
+        <WhcHigh>500kB</WhcHigh>
+      </Watermarks>
+    </Internal>
+  </Domain>
+</CycloneDDS>

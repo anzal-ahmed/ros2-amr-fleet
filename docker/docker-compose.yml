@@ -1,0 +1,56 @@
+version: "3.8"
+
+# Local simulation stack — runs all 3 robots + coordinator on one machine.
+# For EC2 deployment, run robot containers on robot nodes and coordinator
+# on the monitoring node using the individual Dockerfiles.
+
+x-ros-env: &ros-env
+  RMW_IMPLEMENTATION: rmw_cyclonedds_cpp
+  CYCLONEDDS_URI: file:///ros2_ws/src/amr_bringup/config/cyclonedds.xml
+
+services:
+  robot_0:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.robot
+    environment:
+      <<: *ros-env
+    command: >
+      ros2 launch amr_bringup robot.launch.py robot_id:=robot_0
+    network_mode: host
+    restart: unless-stopped
+
+  robot_1:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.robot
+    environment:
+      <<: *ros-env
+    command: >
+      ros2 launch amr_bringup robot.launch.py robot_id:=robot_1
+    network_mode: host
+    restart: unless-stopped
+
+  robot_2:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.robot
+    environment:
+      <<: *ros-env
+    command: >
+      ros2 launch amr_bringup robot.launch.py robot_id:=robot_2
+    network_mode: host
+    restart: unless-stopped
+
+  coordinator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.coordinator
+    environment:
+      <<: *ros-env
+    command: ros2 launch amr_bringup fleet.launch.py
+    network_mode: host
+    depends_on: [robot_0, robot_1, robot_2]
+    restart: unless-stopped
+    ports:
+      - "9101:9101"

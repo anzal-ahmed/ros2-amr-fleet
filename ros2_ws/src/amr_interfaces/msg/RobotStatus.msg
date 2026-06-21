@@ -1,0 +1,14 @@
+std_msgs/Header header
+string robot_id
+uint8 state
+uint8 STATE_IDLE=0
+uint8 STATE_NAVIGATING=1
+uint8 STATE_DOCKING=2
+uint8 STATE_CHARGING=3
+uint8 STATE_SAFE_STOP=4
+uint8 STATE_ERROR=5
+float32 battery_percent
+geometry_msgs/Pose2D pose
+string mission_id
+float32 mission_progress
+builtin_interfaces/Time last_heartbeat

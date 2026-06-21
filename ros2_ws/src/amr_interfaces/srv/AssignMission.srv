@@ -1,0 +1,8 @@
+string robot_id
+geometry_msgs/Pose2D goal_pose
+string mission_id
+float32 priority
+---
+bool success
+string assigned_robot_id
+string message
