@@ -57,9 +57,14 @@ class MetricsExporterNode(Node):
 
         self.declare_parameter("metrics_port", 9101)
         self.declare_parameter("robot_ids", ["robot_0", "robot_1", "robot_2"])
+        # robot_id (singular) used when launched per-robot from robot.launch.py
+        self.declare_parameter("robot_id", "")
 
         port = self.get_parameter("metrics_port").value
-        robot_ids: list[str] = self.get_parameter("robot_ids").value
+        single_id = self.get_parameter("robot_id").value
+        robot_ids: list[str] = (
+            [single_id] if single_id else self.get_parameter("robot_ids").value
+        )
 
         cb = ReentrantCallbackGroup()
 

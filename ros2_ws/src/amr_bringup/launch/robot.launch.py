@@ -46,7 +46,8 @@ def generate_launch_description():
             name="metrics_exporter",
             parameters=[{
                 "metrics_port": 9101,
-                "robot_ids": [LaunchConfiguration("robot_id")],
+                # Pass robot_id as string; node wraps it in a list internally
+                "robot_id": LaunchConfiguration("robot_id"),
             }],
             output="screen",
         ),
