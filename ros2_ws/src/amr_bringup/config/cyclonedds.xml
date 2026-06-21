@@ -15,7 +15,7 @@
 <CycloneDDS>
   <Domain>
     <General>
-      <NetworkInterfaceAddress>eth0</NetworkInterfaceAddress>
+      <NetworkInterfaceAddress>ens5</NetworkInterfaceAddress>
       <AllowMulticast>false</AllowMulticast>
       <MaxMessageSize>65500B</MaxMessageSize>
     </General>
